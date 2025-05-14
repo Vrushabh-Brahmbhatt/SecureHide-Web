@@ -1,0 +1,1045 @@
+{% extends "layout.html" %}
+
+{% block title %}Cipher Visualization | SecureHide{% endblock %}
+
+{% block head %}
+{{ super() }}
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<!-- Custom CSS for animations -->
+<style>
+    /* Custom styling */
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --success-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: 0 0 50% 50% / 10%;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 4rem;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(255,255,255,0.05)" x="0" y="0" width="50" height="50" /><rect fill="rgba(255,255,255,0.05)" x="50" y="50" width="50" height="50" /></svg>');
+        opacity: 0.3;
+    }
+    
+    .header-content {
+        padding: 4rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .header-title {
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .benchmark-card {
+        border-radius: 15px;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.4s ease;
+    }
+    
+    .benchmark-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+        border-bottom: none;
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .card-title {
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 400px;
+        transition: all 0.5s ease;
+    }
+    
+    .chart-container:hover {
+        transform: scale(1.02);
+    }
+    
+    .alert {
+        border-radius: 10px;
+        border: none;
+    }
+    
+    .alert-info, .alert-secondary {
+        background-color: rgba(76, 201, 240, 0.1);
+        border-left: 3px solid var(--success-color);
+    }
+    
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        transition: width 1.5s ease-in-out;
+    }
+    
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .table th {
+        font-weight: 600;
+        background-color: var(--dark-color);
+        color: white;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: var(--primary-color);
+        box-shadow: none;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(67, 97, 238, 0.1);
+    }
+    
+    .card-shadow-primary {
+        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.15);
+    }
+    
+    .card-shadow-info {
+        box-shadow: 0 10px 20px rgba(76, 201, 240, 0.15);
+    }
+    
+    .card-shadow-success {
+        box-shadow: 0 10px 20px rgba(72, 187, 120, 0.15);
+    }
+    
+    .card-shadow-warning {
+        box-shadow: 0 10px 20px rgba(237, 137, 54, 0.15);
+    }
+    
+    .card-shadow-danger {
+        box-shadow: 0 10px 20px rgba(229, 62, 62, 0.15);
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #4cc9f0, #4895ef);
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #4cb670, #38a169);
+    }
+    
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #f87171, #ef4444);
+    }
+    
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+        }
+    }
+    
+    .security-score-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .badge-high {
+        background-color: rgba(72, 187, 120, 0.2);
+        color: #38a169;
+    }
+    
+    .badge-medium {
+        background-color: rgba(237, 137, 54, 0.2);
+        color: #dd6b20;
+    }
+    
+    .badge-low {
+        background-color: rgba(229, 62, 62, 0.2);
+        color: #e53e3e;
+    }
+
+    /* Chart animations */
+    @keyframes growUp {
+        from { height: 0; }
+        to { height: 400px; }
+    }
+    
+    .animate-chart {
+        animation: growUp 1s ease-out forwards;
+    }
+    
+    /* Encryption result animation */
+    .encryption-reveal {
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .encryption-reveal::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    
+    /* Sample text highlight */
+    .highlight-text {
+        background-color: rgba(76, 201, 240, 0.1);
+        border-radius: 4px;
+        padding: 0.25rem 0.5rem;
+        border-left: 3px solid var(--success-color);
+        transition: all 0.3s ease;
+    }
+    
+    .highlight-text:hover {
+        background-color: rgba(76, 201, 240, 0.2);
+    }
+    
+    /* Cipher-specific styling */
+    .cipher-icon {
+        font-size: 2rem;
+        margin-right: 0.75rem;
+    }
+    
+    .cipher-matrix td {
+        width: 40px;
+        height: 40px;
+        font-weight: bold;
+        text-align: center;
+        vertical-align: middle;
+        transition: all 0.3s ease;
+    }
+    
+    .cipher-matrix td:hover {
+        background-color: rgba(67, 97, 238, 0.1);
+        transform: scale(1.05);
+    }
+    
+    .table-visualization th {
+        font-size: 0.8rem;
+    }
+    
+    .table-visualization td {
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    .table-visualization tr:hover td {
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+    
+    .encrypted-result {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        letter-spacing: 1px;
+        color: var(--primary-color);
+        padding: 0.5rem 1rem;
+        background-color: rgba(67, 97, 238, 0.05);
+        border-radius: 5px;
+        border-left: 3px solid var(--primary-color);
+        display: inline-block;
+    }
+    
+    /* Accordion styling */
+    .accordion-item {
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .accordion-button {
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+        background-color: var(--light-color);
+    }
+    
+    .accordion-button:not(.collapsed) {
+        color: var(--primary-color);
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: transparent;
+    }
+    
+    .step-list li {
+        margin-bottom: 0.75rem;
+        padding-left: 0.5rem;
+    }
+    
+    /* Animated steps process */
+    .step-process {
+        position: relative;
+        padding-left: 2rem;
+    }
+    
+    .step-process:before {
+        content: '';
+        position: absolute;
+        left: 0.5rem;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background-color: rgba(67, 97, 238, 0.2);
+    }
+    
+    .step-process li {
+        position: relative;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    .step-process li:before {
+        content: '';
+        position: absolute;
+        left: -2rem;
+        top: 0.25rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="page-header">
+    <div class="container">
+        <div class="header-content text-center" data-aos="fade-up" data-aos-duration="1000">
+            <h1 class="header-title display-4">Cipher Visualization</h1>
+            <p class="lead text-white-50 mx-auto" style="max-width: 700px;">
+                Interactive demonstration of classical encryption techniques with step-by-step visualization of the encryption process.
+            </p>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Introduction -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up">
+            <div class="benchmark-card card-shadow-primary">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-lock me-2"></i> Cipher Visualization
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="lead">
+                        This visualization demonstrates how different classical ciphers encrypt the same plaintext.
+                        Each section shows a step-by-step breakdown of the encryption process.
+                    </p>
+                    <div class="alert alert-info mt-4 d-flex align-items-center" data-aos="fade-right" data-aos-delay="200">
+                        <i class="fas fa-info-circle fa-2x me-3 text-info"></i>
+                        <div>
+                            <strong>Sample Plaintext:</strong> <span class="highlight-text">{{ plaintext }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Caesar Cipher -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="100">
+            <div class="benchmark-card card-shadow-primary">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-exchange-alt cipher-icon text-primary"></i> &nbsp;&nbsp;Caesar Cipher
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>{{ results.caesar.description }}</p>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="security-score-badge badge-medium me-2">Shift Value</div>
+                                    <span class="fw-bold">{{ results.caesar.key }}</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="security-score-badge badge-high me-2">Encrypted Result</div>
+                                    <span class="encrypted-result encryption-reveal">{{ results.caesar.encrypted }}</span>
+                                </div>
+                            </div>
+                            
+                            <h5 class="mt-4 mb-3 d-flex align-items-center">
+                                <i class="fas fa-list-ol me-2 text-primary"></i> Encryption Steps
+                            </h5>
+                            <ol class="step-process">
+                                {% for step in results.caesar.steps %}
+                                    <li data-aos="fade-left" data-aos-delay="{{ loop.index * 50 }}">{{ step }}</li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+                        <div class="col-md-6" data-aos="fade-left" data-aos-delay="200">
+                            <h5 class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-table me-2 text-primary"></i> Step-by-Step Visualization
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-visualization">
+                                    <thead>
+                                        <tr style="color: white;">
+                                            <th>Character</th>
+                                            <th>Position (0-25)</th>
+                                            <th>+ Shift ({{ results.caesar.key }})</th>
+                                            <th>Mod 26</th>
+                                            <th>Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for char in results.caesar.visualization %}
+                                            <tr data-aos="fade-up" data-aos-delay="{{ loop.index * 30 }}">
+                                                <td class="fw-bold">{{ char.char }}</td>
+                                                <td>{{ char.original_pos }}</td>
+                                                <td>{% if char.original_pos != 'N/A' %}{{ char.original_pos }} + {{ char.shift }} = {{ char.original_pos + char.shift }}{% else %}N/A{% endif %}</td>
+                                                <td>{{ char.shifted_pos }}</td>
+                                                <td class="fw-bold text-primary">{{ char.result }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary d-flex align-items-center" data-aos="fade-up">
+                                <i class="fas fa-shield-alt fa-2x me-3 text-danger"></i>
+                                <div>
+                                    <strong>Security Note:</strong> Caesar cipher is one of the simplest and oldest encryption techniques. It's very weak by modern standards because there are only 25 possible keys (shifts), which can be quickly brute-forced.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Playfair Cipher -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="200">
+            <div class="benchmark-card card-shadow-success">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-table cipher-icon text-success"></i>&nbsp;&nbsp; Playfair Cipher
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>{{ results.playfair.description }}</p>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="security-score-badge badge-medium me-2">Key</div>
+                                    <span class="fw-bold">{{ results.playfair.key }}</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="security-score-badge badge-high me-2">Encrypted Result</div>
+                                    <span class="encrypted-result encryption-reveal">{{ results.playfair.encrypted }}</span>
+                                </div>
+                            </div>
+                            
+                            <h5 class="mt-4 mb-3 d-flex align-items-center">
+                                <i class="fas fa-list-ol me-2 text-success"></i> Encryption Steps
+                            </h5>
+                            <ol class="step-process">
+                                {% for step in results.playfair.steps %}
+                                    <li data-aos="fade-left" data-aos-delay="{{ loop.index * 50 }}">{{ step }}</li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="mb-3 d-flex align-items-center" data-aos="fade-left">
+                                <i class="fas fa-th me-2 text-success"></i> Playfair Matrix
+                            </h5>
+                            <div class="table-responsive mb-4" data-aos="fade-up">
+                                <table class="table table-bordered cipher-matrix">
+                                    <tbody>
+                                        {% for row in results.playfair.visualization.matrix %}
+                                            <tr>
+                                                {% for cell in row %}
+                                                    <td data-aos="fade-in" data-aos-delay="{{ loop.index * 50 }}">{{ cell }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <h5 class="mb-3 d-flex align-items-center" data-aos="fade-left" data-aos-delay="200">
+                                <i class="fas fa-random me-2 text-success"></i> Pair Encryption
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-visualization">
+                                    <thead>
+                                        <tr>
+                                            <th>Input Pair</th>
+                                            <th>Positions</th>
+                                            <th>Rule Applied</th>
+                                            <th>Output Pair</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for pair in results.playfair.visualization.pairs %}
+                                            <tr data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                                                <td class="fw-bold">{{ pair.input }}</td>
+                                                <td>{{ pair.positions }}</td>
+                                                <td>{{ pair.rule }}</td>
+                                                <td class="fw-bold text-success">{{ pair.output }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary d-flex align-items-center" data-aos="fade-up">
+                                <i class="fas fa-shield-alt fa-2x me-3 text-warning"></i>
+                                <div>
+                                    <strong>Security Note:</strong> Playfair cipher is significantly stronger than simple substitution ciphers like Caesar because it encrypts pairs of letters rather than individual letters, making frequency analysis more difficult. However, it's still vulnerable to cryptanalysis with sufficient ciphertext.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vigenère Cipher -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="300">
+            <div class="benchmark-card card-shadow-warning">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-key cipher-icon text-warning"></i>&nbsp;&nbsp;Vigenère Cipher
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>{{ results.vigenere.description }}</p>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="security-score-badge badge-medium me-2">Key</div>
+                                    <span class="fw-bold">{{ results.vigenere.key }}</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="security-score-badge badge-high me-2">Encrypted Result</div>
+                                    <span class="encrypted-result encryption-reveal">{{ results.vigenere.encrypted }}</span>
+                                </div>
+                            </div>
+                            
+                            <h5 class="mt-4 mb-3 d-flex align-items-center">
+                                <i class="fas fa-list-ol me-2 text-warning"></i> Encryption Steps
+                            </h5>
+                            <ol class="step-process">
+                                {% for step in results.vigenere.steps %}
+                                    <li data-aos="fade-left" data-aos-delay="{{ loop.index * 50 }}">{{ step }}</li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+                        <div class="col-md-6" data-aos="fade-left" data-aos-delay="200">
+                            <h5 class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-table me-2 text-warning"></i> Step-by-Step Visualization
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-visualization">
+                                    <thead>
+                                        <tr>
+                                            <th>Plaintext</th>
+                                            <th>Key Char</th>
+                                            <th>P Value</th>
+                                            <th>K Value</th>
+                                            <th>P+K</th>
+                                            <th>Mod 26</th>
+                                            <th>Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for char in results.vigenere.visualization %}
+                                            <tr data-aos="fade-up" data-aos-delay="{{ loop.index * 30 }}">
+                                                <td class="fw-bold">{{ char.char }}</td>
+                                                <td class="fw-bold">{{ char.key_char }}</td>
+                                                <td>{{ char.char_value }}</td>
+                                                <td>{{ char.key_value }}</td>
+                                                <td>{{ char.sum }}</td>
+                                                <td>{{ char.modulo }}</td>
+                                                <td class="fw-bold text-warning">{{ char.result }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary d-flex align-items-center" data-aos="fade-up">
+                                <i class="fas fa-shield-alt fa-2x me-3 text-info"></i>
+                                <div>
+                                    <strong>Security Note:</strong> Vigenère cipher is more secure than simpler substitution ciphers because it uses a different shift for each letter, based on the keyword. Its security depends on the length and randomness of the key. With a short or predictable key, it can be broken using techniques like the Kasiski examination.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hill Cipher -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="400">
+            <div class="benchmark-card card-shadow-danger">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-superscript cipher-icon text-danger"></i>&nbsp;&nbsp; Hill Cipher
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>{{ results.hill.description }}</p>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="security-score-badge badge-medium me-2">Key</div>
+                                    <span class="fw-bold">{{ results.hill.key }}</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="security-score-badge badge-high me-2">Encrypted Result</div>
+                                    <span class="encrypted-result encryption-reveal">{{ results.hill.encrypted }}</span>
+                                </div>
+                            </div>
+                            
+                            <h5 class="mt-4 mb-3 d-flex align-items-center">
+                                <i class="fas fa-list-ol me-2 text-danger"></i> Encryption Steps
+                            </h5>
+                            <ol class="step-process">
+                                {% for step in results.hill.steps %}
+                                    <li data-aos="fade-left" data-aos-delay="{{ loop.index * 50 }}">{{ step }}</li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="mb-3 d-flex align-items-center" data-aos="fade-left">
+                                <i class="fas fa-th me-2 text-danger"></i> Key Matrix
+                            </h5>
+                            <div class="table-responsive mb-4" data-aos="fade-up">
+                                <table class="table table-bordered cipher-matrix" style="width: auto;">
+                                    <tbody>
+                                        {% for row in results.hill.visualization.key_matrix %}
+                                            <tr>
+                                                {% for cell in row %}
+                                                    <td data-aos="fade-in" data-aos-delay="{{ loop.index * 50 }}">{{ cell }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <h5 class="mb-3 d-flex align-items-center" data-aos="fade-left" data-aos-delay="200">
+                                <i class="fas fa-calculator me-2 text-danger"></i> Block Encryption
+                            </h5>
+                            <div class="accordion" id="hillAccordion">
+                                {% for block in results.hill.visualization.blocks %}
+                                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                                        <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                            <button class="accordion-button {% if loop.index != 1 %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="{% if loop.index == 1 %}true{% else %}false{% endif %}" aria-controls="collapse{{ loop.index }}">
+                                                <div class="d-flex align-items-center w-100">
+                                                    <div class="me-3">
+                                                        <i class="fas fa-cube text-danger me-2"></i>
+                                                        <span class="fw-bold">Block {{ loop.index }}</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="fw-bold me-2">{{ block.input_block }}</span>
+                                                        <i class="fas fa-arrow-right text-muted mx-2"></i>
+                                                        <span class="fw-bold text-danger">{{ block.output_block }}</span>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.index == 1 %}show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#hillAccordion">
+                                            <div class="accordion-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <div class="security-score-badge badge-medium mb-2">Input Vector</div>
+                                                            <div class="highlight-text">[{{ block.input_vector|join(', ') }}]</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <div class="security-score-badge badge-high mb-2">Output Vector</div>
+                                                            <div class="highlight-text">[{{ block.output_vector|join(', ') }}]</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="security-score-badge badge-medium mb-2">Calculation</div>
+                                                    <div class="highlight-text p-3">
+                                                        <ul class="mb-0">
+                                                            {% for calc in block.calculation %}
+                                                                <li>{{ calc }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary d-flex align-items-center" data-aos="fade-up">
+                                <i class="fas fa-shield-alt fa-2x me-3 text-primary"></i>
+                                <div>
+                                    <strong>Security Note:</strong> Hill cipher uses linear algebra for encryption, which makes it resistant to simple frequency analysis. Its security depends on the invertibility of the key matrix and the size of the matrix. While mathematically more complex than other classical ciphers, it's still vulnerable to known-plaintext attacks.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Security Comparison -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="500">
+            <div class="benchmark-card card-shadow-info">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-chart-bar me-2"></i> Security Comparison
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-container animate-chart bg-dark p-4">
+                                <canvas id="securityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary d-flex align-items-center" data-aos="fade-right" data-aos-delay="200">
+                                <i class="fas fa-lightbulb fa-2x me-3 text-warning"></i>
+                                <div>
+                                    <strong>Note:</strong> This chart compares the relative security level of each cipher based on key space, algorithm complexity, and resistance to cryptanalysis. Modern encryption algorithms like AES and RSA are dramatically more secure than these classical ciphers.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- AOS Animation Library -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+        
+        // Initialize tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        
+        // Security comparison chart
+        const securityCtx = document.getElementById('securityChart').getContext('2d');
+        
+        // Prepare data for the chart
+        const cipherNames = ['Caesar', 'Playfair', 'Vigenère', 'Hill'];
+        const securityScores = [20, 45, 65, 75]; // Example scores
+        const keySpaceScores = [10, 50, 60, 80]; // Example key space scores
+        const complexityScores = [15, 60, 55, 85]; // Example complexity scores
+        const resistanceScores = [5, 40, 60, 70]; // Example resistance scores
+        
+        // Colors
+        const chartColors = [
+            'rgba(67, 97, 238, 0.7)',    // Primary
+            'rgba(72, 187, 120, 0.7)',   // Success
+            'rgba(237, 137, 54, 0.7)',   // Warning
+            'rgba(229, 62, 62, 0.7)'     // Danger
+        ];
+        
+        const borderColors = chartColors.map(c => c.replace('0.7', '1'));
+        
+        // Create chart
+        const securityChart = new Chart(securityCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Overall Security', 'Key Space', 'Algorithm Complexity', 'Attack Resistance', 'Implementation Difficulty'],
+                datasets: [
+                    {
+                        label: 'Caesar',
+                        data: [20, 10, 15, 5, 30],
+                        backgroundColor: chartColors[0].replace('0.7', '0.2'),
+                        borderColor: borderColors[0],
+                        pointBackgroundColor: borderColors[0],
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: borderColors[0]
+                    },
+                    {
+                        label: 'Playfair',
+                        data: [45, 50, 60, 40, 65],
+                        backgroundColor: chartColors[1].replace('0.7', '0.2'),
+                        borderColor: borderColors[1],
+                        pointBackgroundColor: borderColors[1],
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: borderColors[1]
+                    },
+                    {
+                        label: 'Vigenère',
+                        data: [65, 60, 55, 60, 50],
+                        backgroundColor: chartColors[2].replace('0.7', '0.2'),
+                        borderColor: borderColors[2],
+                        pointBackgroundColor: borderColors[2],
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: borderColors[2]
+                    },
+                    {
+                        label: 'Hill',
+                        data: [75, 80, 85, 70, 80],
+                        backgroundColor: chartColors[3].replace('0.7', '0.2'),
+                        borderColor: borderColors[3],
+                        pointBackgroundColor: borderColors[3],
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: borderColors[3]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        ticks: {
+                            stepSize: 20,
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            circular: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Cipher Security Comparison',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 30
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            boxWidth: 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 15,
+                        cornerRadius: 8
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+        
+        // Add hover effects to the cards
+        document.querySelectorAll('.benchmark-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const charts = this.querySelectorAll('canvas');
+                charts.forEach(chart => {
+                    chart.style.transform = 'scale(1.02)';
+                    chart.style.transition = 'transform 0.3s ease';
+                });
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const charts = this.querySelectorAll('canvas');
+                charts.forEach(chart => {
+                    chart.style.transform = 'scale(1)';
+                });
+            });
+        });
+        
+        // Fix for Bootstrap 5 accordion compatibility
+        document.querySelectorAll('.accordion-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const target = document.querySelector(this.getAttribute('data-bs-target'));
+                if (target) {
+                    if (this.classList.contains('collapsed')) {
+                        this.classList.remove('collapsed');
+                        this.setAttribute('aria-expanded', 'true');
+                        target.classList.add('show');
+                    } else {
+                        this.classList.add('collapsed');
+                        this.setAttribute('aria-expanded', 'false');
+                        target.classList.remove('show');
+                    }
+                }
+            });
+        });
+        
+        // Add scroll reveal animations for charts
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-chart');
+                    
+                    // If this is a chart container, trigger a chart update to animate it
+                    const chartCanvas = entry.target.querySelector('canvas');
+                    if (chartCanvas) {
+                        const chartInstance = Chart.getChart(chartCanvas);
+                        if (chartInstance) {
+                            chartInstance.update();
+                        }
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.chart-container').forEach(container => {
+            observer.observe(container);
+        });
+    });
+</script>
+{% endblock %}

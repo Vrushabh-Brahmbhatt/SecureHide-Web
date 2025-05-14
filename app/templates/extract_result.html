@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block title %}Extraction Result{% endblock %}
+
+{% if debug_info %}
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="card-title mb-0">Debug Information</h5>
+    </div>
+    <div class="card-body">
+        <div class="debug-info">
+            <h6>Extraction Information:</h6>
+            <ul>
+                {% for key, value in debug_info.items() %}
+                <li><strong>{{ key }}</strong>: {{ value }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">Extracted Message</h4>
+            </div>
+            <div class="card-body">
+                {% if has_integrity %}
+                <div class="alert {% if is_valid %}alert-success{% else %}alert-danger{% endif %} mb-4">
+                    <h5 class="alert-heading">
+                        {% if is_valid %}
+                        <i class="fas fa-check-circle"></i> Integrity Check: VALID
+                        {% else %}
+                        <i class="fas fa-exclamation-triangle"></i> Integrity Check: INVALID
+                        {% endif %}
+                    </h5>
+                    {% if is_valid %}
+                    <p class="mb-0">The message integrity has been verified. The message has not been tampered with.</p>
+                    {% else %}
+                    <p class="mb-0">Warning: The message may have been tampered with!</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2 mb-3">Message Content</h5>
+                    <div class="bg-light p-3 rounded mb-3" style="white-space: pre-wrap;">{{ message }}</div>
+                    <button class="btn btn-sm btn-outline-primary copy-btn" data-text="{{ message }}">
+                        <i class="fas fa-copy"></i> Copy to Clipboard
+                    </button>
+                </div>
+
+                {% if has_integrity and metadata %}
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2 mb-3">Metadata</h5>
+                    <table class="table table-sm">
+                        <tbody>
+                            {% for key, value in metadata.items() %}
+                            <tr>
+                                <th style="width: 30%">{{ key }}</th>
+                                <td>{{ value }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('steganography.extract') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Extract
+                    </a>
+                    <button class="btn btn-primary" id="saveBtn" data-message="{{ message }}">
+                        <i class="fas fa-save"></i> Save to File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Copy to clipboard functionality
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const text = this.getAttribute('data-text');
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        // Store original HTML
+                        const originalHtml = this.innerHTML;
+
+                        // Change button text temporarily
+                        this.innerHTML = 'Copied!';
+                        this.classList.add('btn-success');
+                        this.classList.remove('btn-outline-primary');
+
+                        setTimeout(() => {
+                            this.innerHTML = originalHtml;
+                            this.classList.remove('btn-success');
+                            this.classList.add('btn-outline-primary');
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+            });
+        });
+
+        // Save to file functionality
+        const saveBtn = document.getElementById('saveBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function () {
+                // Get the message text from a data attribute or another reliable source
+                const messageText = this.getAttribute('data-message') || 'Default message text';
+                const filename = 'extracted_message.txt';
+
+                const blob = new Blob([messageText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+    });
+</script>
+{% endblock %}

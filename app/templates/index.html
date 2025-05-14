@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron p-5 mb-4 rounded-3 slide-up">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">SecureHide</h1>
+        <p class="col-md-8 fs-4">
+            Secure communication through multimedia steganography with hybrid cryptographic encryption.
+        </p>
+        {% if current_user.is_authenticated %}
+        <div class="d-flex gap-3 mt-4">
+            <a href="{{ url_for('steganography.hide') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-lock"></i> Hide Data
+            </a>
+            <a href="{{ url_for('steganography.extract') }}" class="btn btn-success btn-lg">
+                <i class="fas fa-unlock"></i> Extract Data
+            </a>
+        </div>
+        {% else %}
+        <div class="d-flex gap-3 mt-4">
+            <a href="{{ url_for('users.login') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="{{ url_for('users.register') }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-user-plus"></i> Register
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row my-5 fade-in">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center py-4">
+                <i class="fas fa-shield-alt fa-4x mb-3"></i>
+                <h3 class="card-title">Strong Encryption</h3>
+                <p class="card-text">Messages are first encrypted using AES-256 with optional RSA for key exchange.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center py-4">
+                <i class="fas fa-images fa-4x mb-3"></i>
+                <h3 class="card-title">Multiple Media Support</h3>
+                <p class="card-text">Hide your encrypted data in various media formats including images, audio, and video.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center py-4">
+                <i class="fas fa-check-double fa-4x mb-3"></i>
+                <h3 class="card-title">Integrity Protection</h3>
+                <p class="card-text">SHA-256 hashing ensures your hidden messages haven't been tampered with.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-lg-8 mx-auto">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h4 class="m-0">How It Works</h4>
+            </div>
+            <div class="card-body">
+                <div class="steps">
+                    <div class="step d-flex align-items-center mb-4">
+                        <div class="step-number rounded-circle text-white fs-4 d-flex align-items-center justify-content-center me-3">1</div>
+                        <div class="step-content">
+                            <h5>Encrypt Your Message</h5>
+                            <p>Your sensitive message is secured using strong AES-256 encryption.</p>
+                        </div>
+                    </div>
+                    <div class="step d-flex align-items-center mb-4">
+                        <div class="step-number rounded-circle text-white fs-4 d-flex align-items-center justify-content-center me-3">2</div>
+                        <div class="step-content">
+                            <h5>Hide In Media</h5>
+                            <p>The encrypted message is embedded into images, audio, or video files using steganography techniques.</p>
+                        </div>
+                    </div>
+                    <div class="step d-flex align-items-center">
+                        <div class="step-number rounded-circle text-white fs-4 d-flex align-items-center justify-content-center me-3">3</div>
+                        <div class="step-content">
+                            <h5>Extract When Needed</h5>
+                            <p>The recipient can extract and decrypt the hidden message using the correct password.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

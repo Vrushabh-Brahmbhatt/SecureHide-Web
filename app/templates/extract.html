@@ -1,0 +1,142 @@
+{% extends "layout.html" %}
+
+{% block title %}Extract Data{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">Extract Hidden Data</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5 class="border-bottom pb-2 mb-3 text-white">Stego Media</h5>
+                            <div class="mb-3">
+                                {{ form.stego_file.label(class="form-label") }}
+                                {% if form.stego_file.errors %}
+                                    {{ form.stego_file(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.stego_file.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.stego_file(class="form-control") }}
+                                {% endif %}
+                                <div class="form-text">
+                                    Select the media file that contains hidden data
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3" id="frameInfoGroup">
+                                {{ form.frame_info.label(class="form-label") }}
+                                {% if form.frame_info.errors %}
+                                    {{ form.frame_info(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.frame_info.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.frame_info(class="form-control") }}
+                                {% endif %}
+                                <div class="form-text">
+                                    Required for video files only
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12 text-white">
+                            <h5 class="border-bottom pb-2 mb-3">Decryption Options</h5>
+                            
+                            <div class="mb-3 form-check">
+                                {{ form.is_encrypted(class="form-check-input") }}
+                                {{ form.is_encrypted.label(class="form-check-label") }}
+                            </div>
+                            
+                            <div class="mb-3 ms-4 decryption-options">
+                                {{ form.encryption_type.label(class="form-label") }}
+                                {{ form.encryption_type(class="form-select") }}
+                            </div>
+                            
+                            <!-- Modern decryption options -->
+                            <div class="mb-3 ms-4 decryption-options modern-decryption">
+                                {{ form.password.label(class="form-label") }}
+                                {% if form.password.errors %}
+                                    {{ form.password(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.password(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Hidden field to maintain compatibility -->
+                            <div class="d-none">
+                                {% if form.classical_key is defined %}
+                                    {{ form.classical_key(class="d-none") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-success btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isEncryptedCheckbox = document.getElementById('is_encrypted');
+        const encryptionTypeSelect = document.getElementById('encryption_type');
+        const decryptionOptions = document.querySelectorAll('.decryption-options');
+        const modernDecryption = document.querySelector('.modern-decryption');
+        
+        // Toggle decryption options based on checkbox
+        function toggleDecryptionOptions() {
+            const display = isEncryptedCheckbox.checked ? 'block' : 'none';
+            decryptionOptions.forEach(option => {
+                option.style.display = display;
+            });
+        }
+        
+        // Video file detection and frame info visibility
+        const stegoFileInput = document.getElementById('stego_file');
+        const frameInfoGroup = document.getElementById('frameInfoGroup');
+        
+        stegoFileInput.addEventListener('change', function() {
+            const fileName = this.value.toLowerCase();
+            if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mov')) {
+                frameInfoGroup.style.display = 'block';
+            } else {
+                frameInfoGroup.style.display = 'none';
+            }
+        });
+        
+        // Set up event listeners
+        isEncryptedCheckbox.addEventListener('change', toggleDecryptionOptions);
+        
+        // Initialize the form state
+        toggleDecryptionOptions();
+        
+        // Initially hide the frame info group
+        frameInfoGroup.style.display = 'none';
+    });
+</script>
+{% endblock %}

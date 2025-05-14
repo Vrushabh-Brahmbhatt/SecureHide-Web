@@ -1,0 +1,555 @@
+{% extends "layout.html" %}
+
+{% block title %}About | SecureHide{% endblock %}
+
+{% block head %}
+{{ super() }}
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<!-- Custom CSS for animations -->
+<style>
+    /* Custom styling */
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --success-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: 0 0 50% 50% / 10%;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 4rem;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(255,255,255,0.05)" x="0" y="0" width="50" height="50" /><rect fill="rgba(255,255,255,0.05)" x="50" y="50" width="50" height="50" /></svg>');
+        opacity: 0.3;
+    }
+    
+    .header-content {
+        padding: 4rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .header-title {
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .benchmark-card {
+        border-radius: 15px;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.4s ease;
+    }
+    
+    .benchmark-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon-wrapper {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        color: white;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .feature-icon-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        opacity: 0.8;
+        z-index: 0;
+    }
+    
+    .feature-card:hover .feature-icon-wrapper {
+        transform: scale(1.1);
+        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+    }
+    
+    .feature-title {
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+    }
+    
+    .section-title {
+        position: relative;
+        font-weight: 800;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        display: inline-block;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 2px;
+    }
+    
+    .list-group-item {
+        border: none;
+        padding: 1rem 1.5rem;
+        background-color: rgba(67, 97, 238, 0.03);
+        margin-bottom: 0.5rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .list-group-item:hover {
+        background-color: rgba(67, 97, 238, 0.07);
+        transform: translateX(5px);
+    }
+    
+    .tech-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        overflow: hidden;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .tech-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .tech-card .card-header {
+        border: none;
+        padding: 1.25rem;
+    }
+    
+    .tech-card .card-title {
+        margin: 0;
+        font-weight: 700;
+    }
+    
+    .tech-card .list-unstyled li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .tech-card .list-unstyled li:last-child {
+        border-bottom: none;
+    }
+    
+    .tech-icon {
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: rgba(72, 187, 120, 0.1);
+        color: #38a169;
+        margin-right: 0.75rem;
+    }
+    
+    .alert-custom {
+        border-radius: 15px;
+        border: none;
+        background-color: rgba(246, 173, 85, 0.1);
+        border-left: 4px solid #f6ad55;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    /* Border animation */
+    .border-animation {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .border-animation::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 15px;
+        padding: 2px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--success-color), var(--primary-color));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        background-size: 300% 300%;
+        animation: borderAnimation 4s linear infinite;
+    }
+    
+    @keyframes borderAnimation {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 100% 100%; }
+    }
+    
+    /* Hover effect for icons */
+    .hover-rotate {
+        transition: transform 0.5s ease;
+    }
+    
+    .hover-rotate:hover {
+        transform: rotate(15deg);
+    }
+    
+    /* Card group styling */
+    .card-group-container {
+        position: relative;
+    }
+    
+    .card-group-title {
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        margin-bottom: 2rem;
+        font-weight: 700;
+    }
+    
+    .card-group-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -5px;
+        width: 100%;
+        height: 2px;
+        background-color: var(--primary-color);
+        transform: scaleX(0.3);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+    
+    .card-group-container:hover .card-group-title::after {
+        transform: scaleX(0.6);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="page-header">
+    <div class="container">
+        <div class="header-content text-center" data-aos="fade-up" data-aos-duration="1000">
+            <h1 class="header-title display-4">About SecureHide</h1>
+            <p class="lead text-white-50 mx-auto" style="max-width: 700px;">
+                Modern security through multimedia steganography and hybrid cryptographic encryption
+            </p>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Core Values Section -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up">
+            <div class="benchmark-card card-shadow-primary p-4 p-md-5 border-animation">
+                <div class="row">
+                    <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
+                        <div class="text-center feature-card">
+                            <div class="feature-icon-wrapper shadow mb-4">
+                                <i class="fas fa-shield-alt feature-icon hover-rotate"></i>
+                            </div>
+                            <h3 class="feature-title">Security</h3>
+                            <p class="text-muted">Strong encryption and integrity protection for your sensitive messages.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="200">
+                        <div class="text-center feature-card">
+                            <div class="feature-icon-wrapper shadow mb-4" style="background: linear-gradient(135deg, #38a169, #48bb78);">
+                                <i class="fas fa-eye-slash feature-icon hover-rotate"></i>
+                            </div>
+                            <h3 class="feature-title">Stealth</h3>
+                            <p class="text-muted">Hide your data in plain sight within ordinary media files.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="text-center feature-card">
+                            <div class="feature-icon-wrapper shadow mb-4" style="background: linear-gradient(135deg, #4cc9f0, #4895ef);">
+                                <i class="fas fa-user-lock feature-icon hover-rotate"></i>
+                            </div>
+                            <h3 class="feature-title">Privacy</h3>
+                            <p class="text-muted">Protect your communications from unwanted surveillance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- What is SecureHide -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up">
+            <div class="card benchmark-card card-shadow-info p-4 p-md-5 text-white">
+                <div class="card-body p-0">
+                    <h2 class="section-title">What is SecureHide?</h2>
+                    <div class="row align-items-center">
+                        <div class="w-full" data-aos="fade-right">
+                            <p class="lead text-primary fw-bold mb-3">
+                                A robust system combining advanced cryptography with multimedia steganography
+                            </p>
+                            <p>
+                                SecureHide is an innovative platform that combines cryptography (AES/RSA encryption) with multimedia 
+                                steganography (image, audio, video) to create a secure channel for secret communication.
+                            </p>
+                            <p>
+                                It allows users to encrypt messages and embed them invisibly into media files, ensuring 
+                                confidentiality, integrity, and secrecy in a single framework. While encryption protects 
+                                the contents of a message, it does not conceal its existence. Steganography, on the other 
+                                hand, hides the very presence of communication.
+                            </p>
+                        </div>
+                        <!-- <div class="col-md-5" data-aos="fade-left" data-aos-delay="200">
+                            <div class="text-center mb-4 mb-md-0">
+                                <img src="{{ url_for('static', filename='img/steganography-diagram.svg') }}" alt="Steganography Diagram" class="img-fluid rounded shadow-sm" style="max-height: 250px;">
+                                <div class="mt-3 text-center">
+                                    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">Secure Communication</span>
+                                    <span class="badge bg-info-subtle text-info px-3 py-2 rounded-pill mt-2 mt-sm-0 ms-sm-2">Data Privacy</span>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Key Features -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up">
+            <div class="card benchmark-card card-shadow-primary p-4 p-md-5 text-white">
+                <div class="card-body p-0">
+                    <h2 class="section-title mb-4">Key Features</h2>
+                    <div class="row">
+                        <div class="col-md-6" data-aos="fade-right" >
+                            <ul class="list-group  mb-4">
+                                <li class="list-group-item text-white" data-aos="fade-right" data-aos-delay="100" style="background-color: #151b2e; border-style: none;">
+                                    <i class="fas fa-lock text-primary me-2"></i>
+                                    <strong>&nbsp;Strong Encryption:</strong> AES-256 for message security with optional RSA for key exchange
+                                </li>
+                                <li class="list-group-item text-white" data-aos="fade-right" data-aos-delay="200" style="background-color: #151b2e; border-style: none;">
+                                    <i class="fas fa-images text-primary me-2"></i>
+                                    <strong>Multiple Media Support:</strong> Hide data in images, audio, and video files
+                                </li>
+                                <li class="list-group-item text-white" data-aos="fade-right" data-aos-delay="300" style="background-color: #151b2e; border-style: none;">
+                                    <i class="fas fa-check-double text-primary me-2"></i>
+                                    <strong>&nbsp;Integrity Verification:</strong> SHA-256 hashing ensures messages haven't been altered
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6" data-aos="fade-left">
+                            <ul class="list-group">
+                                <li class="list-group-item text-white" data-aos="fade-left" data-aos-delay="100" style="background-color: #151b2e; border-style: none;">
+                                    <i class="fas fa-user-shield text-primary me-2"></i>
+                                    <strong>User Authentication:</strong> Secure login system protects your data
+                                </li>
+                                <li class="list-group-item text-white" data-aos="fade-left" data-aos-delay="200" style="background-color: #151b2e; border-style: none;">
+                                    <i class="fas fa-database text-primary me-2"></i>
+                                    <strong>&nbsp;File Management:</strong> Track and organize your stego files
+                                </li>
+                                <li class="list-group-item text-white" data-aos="fade-left" data-aos-delay="300" style="background-color: #151b2e; border-style: none;">
+                                    <i class="fas fa-puzzle-piece text-primary me-2"></i>
+                                    <strong>&nbsp;Flexible Implementation:</strong> Web-based interface for easy access
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Technical Details -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up">
+            <div class="card benchmark-card card-shadow-warning p-4 p-md-5">
+                <div class="card-body p-0 text-white">
+                    <h2 class="section-title mb-3">Technical Details</h2>
+                    <div class="row">
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="tech-card">
+                                <div class="card-header bg-dark text-white ">
+                                    <h6 class="card-title d-flex align-items-center mb-0">
+                                        <i class="fas fa-lock me-2"></i> Encryption
+                                    </h6>
+                                </div>
+                                <div class="card-body2">
+                                    <ul class="mb-0">
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>AES-256-GCM encryption</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>RSA-2048 for key exchange</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>PBKDF2 key derivation</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>Random salts for extra security</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="tech-card">
+                                <div class="card-header bg-dark text-white p-3">
+                                    <h6 class="card-title d-flex align-items-center mb-0">
+                                        <i class="fas fa-eye-slash me-2"></i> Steganography
+                                    </h6>
+                                </div>
+                                <div class="card-body2">
+                                    <ul class="mb-0">
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>LSB (Least Significant Bit) technique</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>Image steganography (JPG, PNG)</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>Audio steganography (WAV, MP3)</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>Video steganography (MP4, AVI)</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="tech-card">
+                                <div class="card-header bg-dark text-white p-3">
+                                    <h6 class="card-title d-flex align-items-center mb-0">
+                                        <i class="fas fa-code me-2"></i> Web Platform
+                                    </h6>
+                                </div>
+                                <div class="card-body2">
+                                    <ul class="mb-0">
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>Flask web framework</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>SQLite/SQLAlchemy database</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>Bootstrap 5 responsive design</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <span>Secure password hashing</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Legal Notice -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up">
+            <div class="alert alert-custom p-4">
+                <div class="d-flex">
+                    <div class="me-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-heading fw-bold">Legal Notice</h4>
+                        <p>
+                            SecureHide is intended for legitimate security research, educational purposes, 
+                            and lawful use only. The developers are not responsible for any misuse of this software.
+                        </p>
+                        <p class="mb-0">
+                            Please use this tool responsibly and in accordance with applicable laws and regulations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- AOS Animation Library -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+    });
+</script>
+{% endblock %}

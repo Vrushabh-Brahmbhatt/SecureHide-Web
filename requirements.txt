@@ -1,0 +1,14 @@
+Flask==2.3.3
+Flask-WTF==1.1.1
+Flask-SQLAlchemy==3.0.5
+Flask-Login==0.6.2
+Flask-Bcrypt==1.0.1
+WTForms==3.0.1
+email-validator==2.0.0
+cryptography==40.0.0
+Pillow==9.5.0
+numpy==1.24.0
+opencv-python==4.7.0
+pycryptodome==3.18.0
+stegano==0.10.2
+

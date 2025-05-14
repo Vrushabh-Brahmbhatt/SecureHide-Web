@@ -1,0 +1,937 @@
+{% extends "layout.html" %}
+
+{% block title %}Security Benchmark | SecureHide{% endblock %}
+
+{% block head %}
+{{ super() }}
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<!-- Custom CSS for animations -->
+<style>
+    /* Custom styling */
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --success-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: 0 0 50% 50% / 10%;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 4rem;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(255,255,255,0.05)" x="0" y="0" width="50" height="50" /><rect fill="rgba(255,255,255,0.05)" x="50" y="50" width="50" height="50" /></svg>');
+        opacity: 0.3;
+    }
+    
+    .header-content {
+        padding: 4rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .header-title {
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .benchmark-card {
+        border-radius: 15px;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.4s ease;
+    }
+    
+    .benchmark-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+        border-bottom: none;
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .card-title {
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 400px;
+        transition: all 0.5s ease;
+    }
+    
+    .chart-container:hover {
+        transform: scale(1.02);
+    }
+    
+    .alert {
+        border-radius: 10px;
+        border: none;
+    }
+    
+    .alert-info, .alert-secondary {
+        background-color: rgba(76, 201, 240, 0.1);
+        border-left: 3px solid var(--success-color);
+    }
+    
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        transition: width 1.5s ease-in-out;
+    }
+    
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .table th {
+        font-weight: 600;
+        background-color: var(--dark-color);
+        color: white;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: var(--primary-color);
+        box-shadow: none;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(67, 97, 238, 0.1);
+    }
+    
+    .card-shadow-primary {
+        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.15);
+    }
+    
+    .card-shadow-info {
+        box-shadow: 0 10px 20px rgba(76, 201, 240, 0.15);
+    }
+    
+    .card-shadow-success {
+        box-shadow: 0 10px 20px rgba(72, 187, 120, 0.15);
+    }
+    
+    .card-shadow-warning {
+        box-shadow: 0 10px 20px rgba(237, 137, 54, 0.15);
+    }
+    
+    .card-shadow-danger {
+        box-shadow: 0 10px 20px rgba(229, 62, 62, 0.15);
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #4cc9f0, #4895ef);
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #4cb670, #38a169);
+    }
+    
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #f87171, #ef4444);
+    }
+    
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+        }
+    }
+    
+    .security-score-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .badge-high {
+        background-color: rgba(72, 187, 120, 0.2);
+        color: #38a169;
+    }
+    
+    .badge-medium {
+        background-color: rgba(237, 137, 54, 0.2);
+        color: #dd6b20;
+    }
+    
+    .badge-low {
+        background-color: rgba(229, 62, 62, 0.2);
+        color: #e53e3e;
+    }
+
+    /* Chart animations */
+    @keyframes growUp {
+        from { height: 0; }
+        to { height: 400px; }
+    }
+    
+    .animate-chart {
+        animation: growUp 1s ease-out forwards;
+    }
+    
+    /* Encryption result animation */
+    .encryption-reveal {
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .encryption-reveal::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    
+    /* Sample text highlight */
+    .highlight-text {
+        background-color: rgba(76, 201, 240, 0.1);
+        border-radius: 4px;
+        padding: 0.25rem 0.5rem;
+        border-left: 3px solid var(--success-color);
+        transition: all 0.3s ease;
+    }
+    
+    .highlight-text:hover {
+        background-color: rgba(76, 201, 240, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="page-header">
+    <div class="container">
+        <div class="header-content text-center" data-aos="fade-up" data-aos-duration="1000">
+            <h1 class="header-title display-4">Security Benchmark</h1>
+            <p class="lead text-white-50 mx-auto" style="max-width: 700px;">
+                Comprehensive analysis of encryption methods available in SecureHide, evaluated on key space, algorithm complexity, and attack resistance.
+            </p>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Introduction -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up">
+            <div class="benchmark-card card-shadow-primary">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-shield-alt me-2"></i> Security Assessment
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="lead">
+                        This benchmark compares the security strength of different encryption methods available in
+                        SecureHide. Each method is evaluated based on key space, algorithm complexity, and resistance to various
+                        attacks.
+                    </p>
+                    <div class="alert alert-info mt-4 d-flex align-items-center" data-aos="fade-right" data-aos-delay="200">
+                        <i class="fas fa-info-circle fa-2x me-3 text-info"></i>
+                        <div>
+                            <strong>Sample Text:</strong> <span class="highlight-text">{{ sample_text }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Scores Comparison -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="100">
+            <div class="benchmark-card card-shadow-info">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-chart-bar me-2"></i> Security Score Comparison
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-container animate-chart">
+                                <canvas id="securityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary d-flex align-items-center" data-aos="fade-right" data-aos-delay="200">
+                                <i class="fas fa-lightbulb fa-2x me-3 text-warning"></i>
+                                <div>
+                                    <strong>Note:</strong> Security scores are calculated based on key space size, algorithm
+                                    complexity, and resistance to various attack methods. Higher scores indicate stronger
+                                    security.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Comparison -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="200">
+            <div class="benchmark-card card-shadow-success">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-tachometer-alt me-2"></i> Performance Comparison
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-container animate-chart">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary d-flex align-items-center" data-aos="fade-right" data-aos-delay="200">
+                                <i class="fas fa-clock fa-2x me-3 text-success"></i>
+                                <div>
+                                    <strong>Note:</strong> Performance is measured in milliseconds. Lower times indicate better
+                                    performance, but often at the cost of security.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Comparison Table -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="300">
+            <div class="benchmark-card card-shadow-warning">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-table me-2"></i> Detailed Comparison
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Cipher</th>
+                                    <th>Type</th>
+                                    <th>Key Space</th>
+                                    <th>Complexity</th>
+                                    <th>Year Invented</th>
+                                    <th>Time to Crack</th>
+                                    <th>Security Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for method_key, method in methods.items() %}
+                                <tr data-aos="fade-right" data-aos-delay="{{ loop.index * 100 }}">
+                                    <td class="fw-bold">{{ method.name }}</td>
+                                    <td>{{ method.type }}</td>
+                                    <td>{{ method.key_space }}</td>
+                                    <td>{{ method.complexity }}</td>
+                                    <td>{{ method.year_invented }}</td>
+                                    <td class="fw-bold">{{ method.time_to_crack }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2">
+                                                <div class="progress-bar {% if method.security_score|default(0)|int < 30 %}bg-danger{% elif method.security_score|default(0)|int < 70 %}bg-warning{% else %}bg-success{% endif %}"
+                                                    role="progressbar"
+                                                    style="width: 0%"
+                                                    data-width="{{ method.security_score|default(0)|int }}"
+                                                    aria-valuenow="{{ method.security_score|default(0)|int }}" aria-valuemin="0"
+                                                    aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <span class="security-score-badge {% if method.security_score|default(0)|int < 30 %}badge-low{% elif method.security_score|default(0)|int < 70 %}badge-medium{% else %}badge-high{% endif %}">
+                                                {{ method.security_score|default(0)|int }}%
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attack Resistance Comparison -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="500">
+            <div class="benchmark-card card-shadow-primary">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-shield-virus me-2"></i> Attack Resistance Comparison
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-container animate-chart p-4 bg-dark">
+                                <canvas id="radarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary d-flex align-items-center" data-aos="fade-right" data-aos-delay="200">
+                                <i class="fas fa-exclamation-triangle fa-2x me-3 text-danger"></i>
+                                <div>
+                                    <strong>Note:</strong> This radar chart shows each cipher's resistance to different types of
+                                    cryptographic attacks. Higher values indicate better resistance.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Encryption Details -->
+    <div class="row mb-5">
+        <div class="col-lg-12" data-aos="fade-up" data-aos-delay="500">
+            <div class="benchmark-card card-shadow-primary">
+                <div class="card-header bg-dark text-white p-3 mb-3">
+                    <h6 class="card-title d-flex align-items-center">
+                        <i class="fas fa-code me-2"></i> Encryption Results
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="accordion" id="encryptionAccordion">
+                                {% for method_key, method in methods.items() %}
+                                <div class="accordion-item mb-3" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                        <button
+                                            class="accordion-button {% if not loop.first %}collapsed{% endif %}"
+                                            type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}"
+                                            aria-expanded="{{ 'true' if loop.first else 'false' }}"
+                                            aria-controls="collapse{{ loop.index }}">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-lock me-2"></i>
+                                                <span class="fw-bold">{{ method.name }}</span>
+                                                <span class="ms-3 security-score-badge {% if method.security_score|default(0)|int < 30 %}badge-low{% elif method.security_score|default(0)|int < 70 %}badge-medium{% else %}badge-high{% endif %}">
+                                                    {{ method.security_score|default(0)|int }}%
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
+                                        aria-labelledby="heading{{ loop.index }}" data-bs-parent="#encryptionAccordion">
+                                        <div class="accordion-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <h6 class="text-muted text-uppercase fw-bold small">Plaintext</h6>
+                                                        <p class="highlight-text p-2">{{ sample_text }}</p>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <h6 class="text-muted text-uppercase fw-bold small">Key Used</h6>
+                                                        <p class="highlight-text p-2">{{ method.key_used }}</p>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <h6 class="text-muted text-uppercase fw-bold small">Encrypted Result</h6>
+                                                        <p class="highlight-text p-2 encryption-reveal">{{ method.encrypted }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <h6 class="text-muted text-uppercase fw-bold small">Performance</h6>
+                                                        <div class="row g-3">
+                                                            <div class="col-6">
+                                                                <div class="p-3 rounded bg-light">
+                                                                    <div class="small text-muted">Encryption Time</div>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <i class="fas fa-bolt text-warning me-2"></i>
+                                                                        <span class="fw-bold">{{ method.performance.encryption_time }} ms</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="p-3 rounded bg-light">
+                                                                    <div class="small text-muted">Decryption Time</div>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <i class="fas fa-bolt text-info me-2"></i>
+                                                                        <span class="fw-bold">{{ method.performance.decryption_time }} ms</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <h6 class="text-muted text-uppercase fw-bold small">Use Cases</h6>
+                                                        <p class="p-3 rounded bg-light">{{ method.use_cases }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- AOS Animation Library -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // Animate progress bars
+        setTimeout(function() {
+            document.querySelectorAll('.progress-bar').forEach(function (bar) {
+                const width = bar.getAttribute('data-width') || 0;
+                bar.style.width = `${width}%`;
+            });
+        }, 500);
+        
+        // Data preparation
+        const encryptionMethods = JSON.parse('{{ methods|tojson|safe }}');
+        const methodNames = Object.values(encryptionMethods).map(m => m.name);
+        const securityScores = Object.values(encryptionMethods).map(m => m.security_score);
+        const encryptionTimes = Object.values(encryptionMethods).map(m => m.performance.encryption_time);
+        const decryptionTimes = Object.values(encryptionMethods).map(m => m.performance.decryption_time);
+
+        // Define colors for chart
+        const chartColors = [
+            'rgba(67, 97, 238, 0.7)',
+            'rgba(76, 201, 240, 0.7)',
+            'rgba(72, 187, 120, 0.7)',
+            'rgba(237, 137, 54, 0.7)',
+            'rgba(229, 62, 62, 0.7)',
+            'rgba(139, 92, 246, 0.7)'
+        ];
+        
+        const borderColors = chartColors.map(c => c.replace('0.7', '1'));
+
+        // Security score chart with animation
+        const securityCtx = document.getElementById('securityChart').getContext('2d');
+        const securityChart = new Chart(securityCtx, {
+            type: 'bar',
+            data: {
+                labels: methodNames,
+                datasets: [{
+                    label: 'Security Score (0-100)',
+                    data: securityScores,
+                    backgroundColor: chartColors,
+                    borderColor: borderColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            display: true,
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Security Score Comparison',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 30
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 15,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return `Security Score: ${context.raw}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Performance chart with animation
+        const perfCtx = document.getElementById('performanceChart').getContext('2d');
+        const perfChart = new Chart(perfCtx, {
+            type: 'bar',
+            data: {
+                labels: methodNames,
+                datasets: [
+                    {
+                        label: 'Encryption Time (ms)',
+                        data: encryptionTimes,
+                        backgroundColor: 'rgba(76, 201, 240, 0.7)',
+                        borderColor: 'rgba(76, 201, 240, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Decryption Time (ms)',
+                        data: decryptionTimes,
+                        backgroundColor: 'rgba(72, 187, 120, 0.7)',
+                        borderColor: 'rgba(72, 187, 120, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Time (milliseconds)',
+                            font: {
+                                size: 13,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Performance Comparison (Lower is Better)',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 30
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 15,
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
+
+        // Radar chart for attack resistance with animation
+        const attackTypes = ['brute_force', 'frequency_analysis', 'known_plaintext', 'chosen_plaintext'];
+        const attackLabels = ['Brute Force', 'Frequency Analysis', 'Known Plaintext', 'Chosen Plaintext'];
+        const resistanceValues = {
+            'Very Low': 1,
+            'Low': 2,
+            'Medium': 3,
+            'High': 4,
+            'Very High': 5
+        };
+
+        // Prepare datasets for radar chart with animation
+        const radarDatasets = [];
+        let i = 0;
+        for (const [key, method] of Object.entries(encryptionMethods)) {
+            const color = chartColors[i % chartColors.length];
+            const borderColor = borderColors[i % borderColors.length];
+            const data = attackTypes.map(type => resistanceValues[method.resistance[type]] || 0);
+
+            radarDatasets.push({
+                label: method.name,
+                data: data,
+                backgroundColor: color.replace('0.7', '0.2'),
+                borderColor: borderColor,
+                pointBackgroundColor: borderColor,
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: borderColor
+            });
+
+            i++;
+        }
+
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        const radarChart = new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: attackLabels,
+                datasets: radarDatasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    },
+                    point: {
+                        radius: 4,
+                        hoverRadius: 6
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 5,
+                        ticks: {
+                            stepSize: 1,
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            circular: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Attack Resistance Comparison',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 30
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            boxWidth: 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 15,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const resistanceLabels = ['Very Low', 'Low', 'Medium', 'High', 'Very High'];
+                                const value = context.raw;
+                                const label = resistanceLabels[value - 1] || 'Unknown';
+                                return `${context.dataset.label}: ${label} (${value}/5)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Add hover effects to the cards
+        document.querySelectorAll('.benchmark-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const charts = this.querySelectorAll('canvas');
+                charts.forEach(chart => {
+                    chart.style.transform = 'scale(1.02)';
+                    chart.style.transition = 'transform 0.3s ease';
+                });
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const charts = this.querySelectorAll('canvas');
+                charts.forEach(chart => {
+                    chart.style.transform = 'scale(1)';
+                });
+            });
+        });
+        
+        // Add smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId !== '#') {
+                    document.querySelector(targetId).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Add scroll reveal animations for charts
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-chart');
+                    
+                    // If this is a chart container, trigger a chart update to animate it
+                    const chartCanvas = entry.target.querySelector('canvas');
+                    if (chartCanvas) {
+                        const chartInstance = Chart.getChart(chartCanvas);
+                        if (chartInstance) {
+                            chartInstance.update();
+                        }
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.chart-container').forEach(container => {
+            observer.observe(container);
+        });
+    });
+</script>
+{% endblock %}
