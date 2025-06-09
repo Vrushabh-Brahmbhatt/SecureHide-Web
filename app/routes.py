@@ -14,6 +14,7 @@ from config import Config
 from flask import jsonify
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
+from app.modules import classical_ciphers
 
 # Blueprint definitions
 main = Blueprint('main', __name__)
@@ -278,23 +279,48 @@ def hide():
             is_encrypted = False
             if form.encryption.data:
                 encryption_type = form.encryption_type.data
-                
-                # Only handle AES and AES+RSA encryption
-                password = form.password.data
-                use_rsa = (encryption_type == 'aes_rsa')
-                
-                try:
-                    # Use our modified function that handles RSA keys properly
-                    encrypted_package = encryption.hybrid_encrypt(message_to_hide, password, use_rsa)
-                    message_to_hide = json.dumps(encrypted_package)
-                    is_encrypted = True
-                    
-                    if use_rsa:
-                        flash('RSA encryption used. The private key is safely stored within the message.', 'info')
-                except Exception as e:
-                    flash(f'Encryption error: {str(e)}', 'danger')
-                    return redirect(url_for('steganography.hide'))
-            
+
+                # Handle classical ciphers
+                if encryption_type in ['caesar', 'playfair', 'vigenere', 'hill']:
+                    try:
+                        cipher = classical_ciphers.get_cipher(encryption_type)
+                        classical_key = form.classical_key.data
+
+                        # Encrypt the message
+                        encrypted_message = cipher.encrypt(message_to_hide, classical_key)
+
+                        # Create a simple package format for classical ciphers
+                        encrypted_package = {
+                            'method': encryption_type,
+                            'encrypted_data': encrypted_message,
+                            'key_type': 'classical'
+                        }
+
+                        message_to_hide = json.dumps(encrypted_package)
+                        is_encrypted = True
+
+                        flash(f'{encryption_type.capitalize()} cipher encryption applied. Note: Classical ciphers provide limited security.', 'info')
+                    except Exception as e:
+                        flash(f'Classical cipher encryption error: {str(e)}', 'danger')
+                        return redirect(url_for('steganography.hide'))
+
+                # Only handle AES and AES+RSA encryption if not classical
+                elif encryption_type in ['aes', 'aes_rsa']:
+                    password = form.password.data
+                    use_rsa = (encryption_type == 'aes_rsa')
+
+                    try:
+                        # Use our modified function that handles RSA keys properly
+                        encrypted_package = encryption.hybrid_encrypt(message_to_hide, password, use_rsa)
+                        message_to_hide = json.dumps(encrypted_package)
+                        is_encrypted = True
+
+                        if use_rsa:
+                            flash('RSA encryption used. The private key is safely stored within the message.', 'info')
+                    except Exception as e:
+                        flash(f'Encryption error: {str(e)}', 'danger')
+                        return redirect(url_for('steganography.hide'))
+
             # Different handling based on media type
             if media_type == 'video':
                 # Using the image-based approach for videos
@@ -455,24 +481,49 @@ def extract():
                 )
             
             # Check if data is encrypted
-            data_is_encrypted = False
+            is_encrypted = False
             try:
                 data_json = json.loads(extracted_data)
-                if 'method' in data_json and any(key in data_json for key in ['encrypted_data', 'encrypted_key', 'iv', 'tag', 'ciphertext']):
-                    data_is_encrypted = True
+                if 'method' in data_json and any(key in data_json for key in ['encrypted_data', 'key_type', 'encrypted_key', 'iv', 'tag', 'ciphertext']):
+                    is_encrypted = True
             except:
                 pass
             
             # Decrypt if necessary
-            if data_is_encrypted and is_encrypted:
+            if is_encrypted and form.is_encrypted.data:
                 try:
                     encrypted_package = json.loads(extracted_data)
-                    decrypted_data = hybrid_decrypt_modified(encrypted_package, password)
-                    extracted_data = decrypted_data
+                    encryption_method = encrypted_package.get('method', '')
+
+                    # Handle classical ciphers
+                    if encryption_method in ['caesar', 'playfair', 'vigenere', 'hill']:
+                        try:
+                            cipher = classical_ciphers.get_cipher(encryption_method)
+                            classical_key = form.classical_key.data
+
+                            # Get the encrypted data from the package
+                            encrypted_text = encrypted_package.get('encrypted_data', '')
+
+                            # Decrypt the data
+                            decrypted_data = cipher.decrypt(encrypted_text, classical_key)
+                            extracted_data = decrypted_data
+                        except Exception as e:
+                            flash(f'Classical cipher decryption failed: {str(e)}', 'danger')
+                            return redirect(url_for('steganography.extract'))
+
+                    # Handle AES/RSA encryption methods
+                    elif encryption_method in ['password', 'key', 'rsa', 'aes', 'aes_rsa']:
+                        # Use our modified decrypt function
+                        password = form.password.data
+                        decrypted_data = hybrid_decrypt_modified(encrypted_package, password)
+                        extracted_data = decrypted_data
+                    else:
+                        raise ValueError(f"Unknown encryption method: {encryption_method}")
+
                 except Exception as e:
                     flash(f'Decryption failed: {str(e)}', 'danger')
                     return redirect(url_for('steganography.extract'))
-            
+    
             # Check for integrity info
             has_integrity = False
             is_valid = False

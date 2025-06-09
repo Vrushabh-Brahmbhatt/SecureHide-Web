@@ -15,7 +15,7 @@
                 <div class="card-body p-4">
                     <form method="POST" action="" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
-                        
+
                         <!-- Step Indicator -->
                         <div class="mb-4">
                             <div class="d-flex justify-content-between step-indicator">
@@ -35,7 +35,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Cover Media Section -->
                         <div class="section-card mb-4" style="border: none; background-color: #121322;">
                             <div class="section-header" style="background-color: #121322; border: none;">
@@ -62,14 +62,14 @@
                                             </div>
                                         </label>
                                         {% if form.media_file.errors %}
-                                            <div class="invalid-feedback d-block mt-2">
-                                                {% for error in form.media_file.errors %}
-                                                    <span>{{ error }}</span>
-                                                {% endfor %}
-                                            </div>
+                                        <div class="invalid-feedback d-block mt-2">
+                                            {% for error in form.media_file.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
                                         {% endif %}
                                     </div>
-                                    
+
                                     <div class="mt-3">
                                         <div class="format-indicator">
                                             <div class="row g-2">
@@ -96,7 +96,8 @@
                                         <div class="alert alert-info mt-3 mb-0 d-flex align-items-start">
                                             <i class="fas fa-info-circle mt-1 me-2"></i>
                                             <div>
-                                                <strong>Supported formats:</strong> JPG, PNG, GIF, BMP, WAV, MP3, MP4, AVI, MOV
+                                                <strong>Supported formats:</strong> JPG, PNG, GIF, BMP, WAV, MP3, MP4,
+                                                AVI, MOV
                                             </div>
                                         </div>
                                     </div>
@@ -117,14 +118,16 @@
                                     {{ form.message.label(class="form-label") }}
                                     <div class="position-relative">
                                         {% if form.message.errors %}
-                                            {{ form.message(class="form-control is-invalid message-textarea text-white", rows=6, placeholder="Enter your secret message here...") }}
-                                            <div class="invalid-feedback">
-                                                {% for error in form.message.errors %}
-                                                    <span>{{ error }}</span>
-                                                {% endfor %}
-                                            </div>
+                                        {{ form.message(class="form-control is-invalid message-textarea text-white",
+                                        rows=6, placeholder="Enter your secret message here...") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.message.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
                                         {% else %}
-                                            {{ form.message(class="form-control message-textarea", rows=6, placeholder="Enter your secret message here...") }}
+                                        {{ form.message(class="form-control message-textarea", rows=6,
+                                        placeholder="Enter your secret message here...") }}
                                         {% endif %}
                                         <div class="character-counter">
                                             <span id="char-count">0</span> characters
@@ -146,14 +149,16 @@
                                 <!-- Encryption toggle -->
                                 <div class="option-card mb-3 bg-dark border-0">
                                     <div class="d-flex align-items-center">
-                                        {{ form.encryption(class="form-check-input me-3", style="background-color: #4e54c8; border:0;") }}
+                                        {{ form.encryption(class="form-check-input me-3", style="background-color:
+                                        #4e54c8; border:0;") }}
                                         <div>
                                             {{ form.encryption.label(class="form-check-label fw-bold") }}
-                                            <p class="text-muted mb-0 small">Encrypt your message with a password before hiding it</p>
+                                            <p class="text-muted mb-0 small">Encrypt your message with a password before
+                                                hiding it</p>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Encryption options -->
                                 <div class="encryption-options ms-4 ps-3">
                                     <div class="option-card mb-3 bg-dark border-0">
@@ -165,26 +170,26 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Modern encryption options -->
                                     <div class="option-card mb-3 modern-encryption bg-dark border-0">
                                         {{ form.password.label(class="form-label") }}
                                         <div class="input-group mb-2">
                                             {% if form.password.errors %}
-                                                {{ form.password(class="form-control is-invalid", placeholder="Enter a strong password") }}
-                                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                                    <i class="fas fa-eye-slash"></i>
-                                                </button>
-                                                <div class="invalid-feedback">
-                                                    {% for error in form.password.errors %}
-                                                        <span>{{ error }}</span>
-                                                    {% endfor %}
-                                                </div>
+                                            {{ form.password(class="form-control is-invalid", placeholder="Enter a strong password") }}
+                                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                <i class="fas fa-eye-slash"></i>
+                                            </button>
+                                            <div class="invalid-feedback">
+                                                {% for error in form.password.errors %}
+                                                <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
                                             {% else %}
-                                                {{ form.password(class="form-control", placeholder="Enter a strong password") }}
-                                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                                    <i class="fas fa-eye-slash"></i>
-                                                </button>
+                                            {{ form.password(class="form-control", placeholder="Enter a strong password") }}
+                                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                <i class="fas fa-eye-slash"></i>
+                                            </button>
                                             {% endif %}
                                         </div>
                                         <div class="password-strength">
@@ -194,26 +199,45 @@
                                             <span id="strength-text" class="strength-text">Password strength</span>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Classical cipher options -->
-                                    <div class="d-none">
-                                        <!-- Completely hidden, but keeps the template from breaking -->
-                                        {{ form.classical_key.label(class="form-label d-none") }}
-                                        {{ form.classical_key(class="form-control d-none") }}
-                                    </div>
-                                </div>
-                                
-                                <!-- Integrity check toggle -->
-                                <div class="option-card mb-3 bg-dark border-0">
-                                    <div class="d-flex align-items-center">
-                                        {{ form.integrity_check(class="form-check-input me-3", style="background-color: #4e54c8; border:0;") }}
-                                        <div>
-                                            {{ form.integrity_check.label(class="form-check-label fw-bold") }}
-                                            <p class="text-muted mb-0 small">Add SHA-256 hash to verify data integrity</p>
+                                    <div class="option-card mb-3 classical-encryption bg-dark border-0"
+                                        id="classical_key_container" style="display: none;">
+                                        {{ form.classical_key.label(class="form-label") }}
+                                        <div class="input-group mb-2">
+                                            {% if form.classical_key.errors %}
+                                            {{ form.classical_key(class="form-control is-invalid", placeholder="Enter
+                                            cipher key") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.classical_key.errors %}
+                                                <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            {{ form.classical_key(class="form-control", placeholder="Enter cipher key")
+                                            }}
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-text" id="classical-key-help">
+                                            Classical ciphers are for educational purposes only and not recommended for
+                                            sensitive data.
                                         </div>
                                     </div>
                                 </div>
-                                
+
+                                <!-- Integrity check toggle -->
+                                <div class="option-card mb-3 bg-dark border-0">
+                                    <div class="d-flex align-items-center">
+                                        {{ form.integrity_check(class="form-check-input me-3", style="background-color:
+                                        #4e54c8; border:0;") }}
+                                        <div>
+                                            {{ form.integrity_check.label(class="form-check-label fw-bold") }}
+                                            <p class="text-muted mb-0 small">Add SHA-256 hash to verify data integrity
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Security Level Indicator -->
                                 <div class="security-level mt-4">
                                     <div class="d-flex justify-content-between mb-2">
@@ -226,7 +250,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Debug Information -->
                         <div class="mb-3 bg-dark border-0 p-3">
                             <h6 class="text-white">Debug Information</h6>
@@ -237,7 +261,7 @@
                                 <!-- <small>Classical Key: {{ form.classical_key.data or 'none' }}</small> -->
                             </div>
                         </div>
-                        
+
                         <!-- Submit Button -->
                         <div class="d-grid gap-2">
                             {{ form.submit(class="btn btn-primary btn-lg px-5 py-3") }}
@@ -250,301 +274,301 @@
 </div>
 
 <style>
-/* Step Indicator */
-.step-indicator {
-    width: 100%;
-    position: relative;
-    margin-bottom: 30px;
-}
+    /* Step Indicator */
+    .step-indicator {
+        width: 100%;
+        position: relative;
+        margin-bottom: 30px;
+    }
 
-.step {
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
+    .step {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
 
-.step-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #e9ecef;
-    color: #6c757d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 8px;
-    font-weight: bold;
-    border: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-}
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        font-weight: bold;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
 
-.step.active .step-icon {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
-}
+    .step.active .step-icon {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
 
-.step-text {
-    font-size: 0.85rem;
-    color: #6c757d;
-    font-weight: 500;
-}
+    .step-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
 
-.step.active .step-text {
-    color: #0d6efd;
-    font-weight: 600;
-}
+    .step.active .step-text {
+        color: #0d6efd;
+        font-weight: 600;
+    }
 
-.step-connector {
-    flex-grow: 1;
-    height: 3px;
-    background-color: #e9ecef;
-    margin-top: 20px;
-}
+    .step-connector {
+        flex-grow: 1;
+        height: 3px;
+        background-color: #e9ecef;
+        margin-top: 20px;
+    }
 
-.step-connector.active {
-    background-color: #0d6efd;
-}
+    .step-connector.active {
+        background-color: #0d6efd;
+    }
 
-/* Section Cards */
-.section-card {
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
+    /* Section Cards */
+    .section-card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
 
-.section-card:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    border-color: #c2c9d6;
-}
+    .section-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        border-color: #c2c9d6;
+    }
 
-.section-header {
-    background-color: #f8f9fa;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid #dee2e6;
-}
+    .section-header {
+        background-color: #f8f9fa;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #dee2e6;
+    }
 
-.section-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background-color: #0d6efd;
-    color: white;
-    border-radius: 50%;
-    margin-right: 10px;
-    font-size: 14px;
-    font-weight: 600;
-}
+    .section-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background-color: #0d6efd;
+        color: white;
+        border-radius: 50%;
+        margin-right: 10px;
+        font-size: 14px;
+        font-weight: 600;
+    }
 
-.section-body {
-    padding: 1.5rem;
-}
+    .section-body {
+        padding: 1.5rem;
+    }
 
-/* Dropzone */
-.dropzone-container {
-    width: 100%;
-}
+    /* Dropzone */
+    .dropzone-container {
+        width: 100%;
+    }
 
-.dropzone {
-    width: 100%;
-    min-height: 150px;
-    border: 2px dashed #ced4da;
-    border-radius: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: #f8f9fa;
-    margin-bottom: 0;
-}
+    .dropzone {
+        width: 100%;
+        min-height: 150px;
+        border: 2px dashed #ced4da;
+        border-radius: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        margin-bottom: 0;
+    }
 
-.dropzone:hover {
-    border-color: #0d6efd;
-    background-color: #f0f7ff;
-}
+    .dropzone:hover {
+        border-color: #0d6efd;
+        background-color: #f0f7ff;
+    }
 
-.dropzone-content {
-    text-align: center;
-    padding: 2rem 1rem;
-}
+    .dropzone-content {
+        text-align: center;
+        padding: 2rem 1rem;
+    }
 
-.dropzone-icon {
-    font-size: 2.5rem;
-    color: #0d6efd;
-    margin-bottom: 1rem;
-}
+    .dropzone-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        margin-bottom: 1rem;
+    }
 
-.dropzone-text {
-    margin-bottom: 0.5rem;
-    color: #495057;
-}
+    .dropzone-text {
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
 
-.dropzone-hint {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
+    .dropzone-hint {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
 
-/* Format Indicators */
-.format-indicator {
-    margin-bottom: 1rem;
-}
+    /* Format Indicators */
+    .format-indicator {
+        margin-bottom: 1rem;
+    }
 
-.format-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    justify-content: center;
-}
+    .format-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        justify-content: center;
+    }
 
-.format-item i {
-    font-size: 1.1rem;
-}
+    .format-item i {
+        font-size: 1.1rem;
+    }
 
-/* Message Textarea */
-.message-textarea {
-    resize: vertical;
-    min-height: 120px;
-    padding-bottom: 2.5rem;
-}
+    /* Message Textarea */
+    .message-textarea {
+        resize: vertical;
+        min-height: 120px;
+        padding-bottom: 2.5rem;
+    }
 
-.character-counter {
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    font-size: 0.75rem;
-    color: #6c757d;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 2px 8px;
-    border-radius: 4px;
-}
+    .character-counter {
+        position: absolute;
+        bottom: 8px;
+        right: 12px;
+        font-size: 0.75rem;
+        color: #6c757d;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
 
-/* Security Option Cards */
-.option-card {
-    padding: 1rem;
-    border-radius: 0.375rem;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-}
+    /* Security Option Cards */
+    .option-card {
+        padding: 1rem;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
 
-.encryption-options {
-    border-left: 3px solid #0d6efd;
-    margin-top: 0;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: all 0.3s ease;
-}
+    .encryption-options {
+        border-left: 3px solid #0d6efd;
+        margin-top: 0;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
 
-.encryption-options.show {
-    max-height: 500px;
-    opacity: 1;
-    margin-top: 1rem;
-    margin-bottom: 1.5rem;
-}
+    .encryption-options.show {
+        max-height: 500px;
+        opacity: 1;
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+    }
 
-/* Password Strength */
-.password-strength {
-    margin-top: 0.5rem;
-}
+    /* Password Strength */
+    .password-strength {
+        margin-top: 0.5rem;
+    }
 
-.strength-bar {
-    height: 6px;
-    background-color: #e9ecef;
-    border-radius: 3px;
-    margin-bottom: 5px;
-    overflow: hidden;
-}
+    .strength-bar {
+        height: 6px;
+        background-color: #e9ecef;
+        border-radius: 3px;
+        margin-bottom: 5px;
+        overflow: hidden;
+    }
 
-.strength-fill {
-    height: 100%;
-    width: 0;
-    border-radius: 3px;
-    background-color: #dc3545; /* Default: weak */
-    transition: all 0.3s ease;
-}
+    .strength-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 3px;
+        background-color: #dc3545;
+        /* Default: weak */
+        transition: all 0.3s ease;
+    }
 
-.strength-fill.medium {
-    background-color: #ffc107;
-    width: 50%;
-}
+    .strength-fill.medium {
+        background-color: #ffc107;
+        width: 50%;
+    }
 
-.strength-fill.strong {
-    background-color: #198754;
-    width: 100%;
-}
+    .strength-fill.strong {
+        background-color: #198754;
+        width: 100%;
+    }
 
-.strength-text {
-    font-size: 0.75rem;
-    color: #6c757d;
-}
+    .strength-text {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
 
-/* Security Level Indicator */
-.security-level-badge {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    background-color: #dc3545;
-    color: white;
-}
+    /* Security Level Indicator */
+    .security-level-badge {
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background-color: #dc3545;
+        color: white;
+    }
 
-.security-level-badge.medium {
-    background-color: #ffc107;
-    color: #212529;
-}
+    .security-level-badge.medium {
+        background-color: #ffc107;
+        color: #212529;
+    }
 
-.security-level-badge.high {
-    background-color: #198754;
-}
+    .security-level-badge.high {
+        background-color: #198754;
+    }
 
-.security-level-bar {
-    height: 8px;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    overflow: hidden;
-}
+    .security-level-bar {
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
 
-.security-level-fill {
-    height: 100%;
-    width: 0; /* Default: low */
-    background-color: #dc3545;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
+    .security-level-fill {
+        height: 100%;
+        width: 0;
+        /* Default: low */
+        background-color: #dc3545;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
 
-.security-level-fill.medium {
-    background-color: #ffc107;
-    width: 50%;
-}
+    .security-level-fill.medium {
+        background-color: #ffc107;
+        width: 50%;
+    }
 
-.security-level-fill.high {
-    background-color: #198754;
-    width: 100%;
-}
+    .security-level-fill.high {
+        background-color: #198754;
+        width: 100%;
+    }
 </style>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // Simplified JavaScript for hide.html - keep only modern encryption handling
-    
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // File upload handling
         const mediaFileInput = document.getElementById('media_file');
         const fileSelectedText = document.getElementById('file-selected');
         const dropzone = document.querySelector('.dropzone');
-        
-        mediaFileInput.addEventListener('change', function() {
+
+        mediaFileInput.addEventListener('change', function () {
             if (mediaFileInput.files.length > 0) {
                 const fileName = mediaFileInput.files[0].name;
                 fileSelectedText.textContent = fileName;
@@ -556,51 +580,51 @@
                 dropzone.style.backgroundColor = '#f8f9fa';
             }
         });
-        
+
         // Message character count
         const messageTextarea = document.getElementById('message');
         const charCount = document.getElementById('char-count');
-        
-        messageTextarea.addEventListener('input', function() {
+
+        messageTextarea.addEventListener('input', function () {
             const count = messageTextarea.value.length;
             charCount.textContent = count;
         });
-        
+
         // Password visibility toggle
         const passwordInput = document.getElementById('password');
         const togglePassword = document.getElementById('togglePassword');
-        
+
         if (togglePassword) {
-            togglePassword.addEventListener('click', function() {
+            togglePassword.addEventListener('click', function () {
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
-                
+
                 // Toggle icon
                 const icon = togglePassword.querySelector('i');
                 icon.classList.toggle('fa-eye');
                 icon.classList.toggle('fa-eye-slash');
             });
         }
-        
+
         // Password strength meter
         const strengthFill = document.getElementById('strength-fill');
         const strengthText = document.getElementById('strength-text');
-        
+
         if (passwordInput) {
-            passwordInput.addEventListener('input', function() {
+            passwordInput.addEventListener('input', function () {
                 const password = passwordInput.value;
-                
+
                 // Calculate strength
                 let strength = 0;
-                
+
                 if (password.length >= 8) strength += 1;
                 if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
                 if (password.match(/\d+/)) strength += 1;
                 if (password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) strength += 1;
-                
+
                 // Update UI based on strength
                 strengthFill.className = 'strength-fill';
-                
+
                 if (password.length === 0) {
                     strengthFill.style.width = '0';
                     strengthText.textContent = 'Password strength';
@@ -617,101 +641,181 @@
                     strengthText.textContent = 'Strong';
                     strengthText.style.color = '#198754';
                 }
-                
+
                 // Update overall security level
                 updateSecurityLevel();
             });
         }
-        
+
         // Encryption options toggle
         const encryptionCheckbox = document.getElementById('encryption');
         const encryptionOptions = document.querySelector('.encryption-options');
         const encryptionTypeSelect = document.getElementById('encryption_type');
         const encryptionTypeHelp = document.getElementById('encryption-type-help');
         const modernEncryption = document.querySelector('.modern-encryption');
+        const classicalKey = document.getElementById('classical_key');
+        const classicalKeyContainer = document.getElementById('classical_key_container');
         const integrityCheck = document.getElementById('integrity_check');
-        
+
         // Toggle encryption options based on checkbox
-        encryptionCheckbox.addEventListener('change', function() {
+        encryptionCheckbox.addEventListener('change', function () {
             if (encryptionCheckbox.checked) {
                 encryptionOptions.classList.add('show');
             } else {
                 encryptionOptions.classList.remove('show');
             }
-            
+
             // Update the encryption type description
             updateEncryptionType();
-            
+
             // Update security level
             updateSecurityLevel();
+
+            // Toggle appropriate encryption fields
+            toggleEncryptionFields();
         });
-        
+
         // Update description when encryption type changes
-        encryptionTypeSelect.addEventListener('change', function() {
+        encryptionTypeSelect.addEventListener('change', function () {
             updateEncryptionType();
             updateSecurityLevel();
+            toggleEncryptionFields();
         });
-        
+
+        // Function to toggle fields based on encryption type
+        function toggleEncryptionFields() {
+            const selectedEncryption = encryptionTypeSelect.value;
+
+            const existingWarning = document.getElementById('classical-cipher-warning');
+            if (existingWarning) {
+                existingWarning.remove();
+            }
+
+            // Hide all encryption fields first
+            modernEncryption.style.display = 'none';
+            if (classicalKeyContainer) {
+                classicalKeyContainer.style.display = 'none';
+            }
+
+            // Show appropriate fields based on selection
+            if (selectedEncryption === 'aes' || selectedEncryption === 'aes_rsa') {
+                modernEncryption.style.display = 'block';
+            } else if (['caesar', 'playfair', 'vigenere', 'hill'].includes(selectedEncryption)) {
+                if (classicalKeyContainer) {
+                    classicalKeyContainer.style.display = 'block';
+                }
+            }
+
+            // Show warning for classical ciphers
+            if (['caesar', 'playfair', 'vigenere', 'hill'].includes(selectedEncryption) && encryptionCheckbox.checked) {
+                showClassicalCipherWarning();
+            }
+        }
+
+        function showClassicalCipherWarning() {
+            // Create alert if it doesn't exist
+            if (!document.getElementById('classical-cipher-warning')) {
+                const warningAlert = document.createElement('div');
+                warningAlert.id = 'classical-cipher-warning';
+                warningAlert.className = 'alert alert-warning alert-dismissible fade show';
+                warningAlert.innerHTML = `
+                <strong>Security Warning:</strong> Classical ciphers are included for educational purposes only. 
+                They do not provide strong security for sensitive information. For sensitive data, please use AES encryption.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+                // Insert after the encryption options
+                const encryptionOptions = document.querySelector('.encryption-options');
+                encryptionOptions.parentNode.insertBefore(warningAlert, encryptionOptions.nextSibling);
+            }
+        }
+
         function updateEncryptionType() {
             if (!encryptionCheckbox.checked) {
                 return; // Do nothing if encryption is disabled
             }
-            
+
             const selectedValue = encryptionTypeSelect.value;
-            
+
             // Update help text
             if (selectedValue === 'aes') {
                 encryptionTypeHelp.textContent = 'AES-256 encryption with password-based key';
             } else if (selectedValue === 'aes_rsa') {
                 encryptionTypeHelp.textContent = 'AES-256 with RSA key exchange (most secure)';
+            } else if (selectedValue === 'caesar') {
+                encryptionTypeHelp.textContent = 'Caesar cipher with numerical shift key (educational)';
+            } else if (selectedValue === 'playfair') {
+                encryptionTypeHelp.textContent = 'Playfair cipher with keyword (educational)';
+            } else if (selectedValue === 'vigenere') {
+                encryptionTypeHelp.textContent = 'Vigenère cipher with keyword (educational)';
+            } else if (selectedValue === 'hill') {
+                encryptionTypeHelp.textContent = 'Hill cipher with matrix key (educational)';
             }
         }
-        
+
         // Update security level indicator
         const securityLevelFill = document.getElementById('security-level-fill');
         const securityLevelText = document.getElementById('security-level-text');
-        
+
         // Add integrity check event listener
         integrityCheck.addEventListener('change', updateSecurityLevel);
-        
+
         function updateSecurityLevel() {
             let securityScore = 0;
-            
+
             // Add score for encryption
             if (encryptionCheckbox.checked) {
                 const encryptionType = encryptionTypeSelect.value;
-                
-                // Modern encryption
-                securityScore += 50;
-                
-                // Add score for password strength if using modern encryption
-                if (passwordInput.value.length > 0) {
-                    const password = passwordInput.value;
-                    let passStrength = 0;
-                    
-                    if (password.length >= 8) passStrength += 1;
-                    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) passStrength += 1;
-                    if (password.match(/\d+/)) passStrength += 1;
-                    if (password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) passStrength += 1;
-                    
-                    securityScore += (passStrength * 5);
-                }
-                
-                // Extra points for RSA
-                if (encryptionType === 'aes_rsa') {
+
+                // Different scores based on encryption type
+                if (encryptionType === 'aes') {
+                    securityScore += 50;
+                } else if (encryptionType === 'aes_rsa') {
+                    securityScore += 70;
+                } else if (encryptionType === 'hill') {
+                    securityScore += 20;
+                } else if (encryptionType === 'vigenere') {
+                    securityScore += 15;
+                } else if (encryptionType === 'playfair') {
                     securityScore += 10;
+                } else if (encryptionType === 'caesar') {
+                    securityScore += 5;
+                }
+
+                // Add score for password strength if using modern encryption
+                if (encryptionType === 'aes' || encryptionType === 'aes_rsa') {
+                    if (passwordInput.value.length > 0) {
+                        const password = passwordInput.value;
+                        let passStrength = 0;
+
+                        if (password.length >= 8) passStrength += 1;
+                        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) passStrength += 1;
+                        if (password.match(/\d+/)) passStrength += 1;
+                        if (password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) passStrength += 1;
+
+                        securityScore += (passStrength * 5);
+                    }
+                }
+
+                // Add a small score for classical cipher key complexity
+                if (['caesar', 'playfair', 'vigenere', 'hill'].includes(encryptionType)) {
+                    const classicalKeyVal = classicalKey.value;
+                    if (classicalKeyVal.length > 0) {
+                        // Longer keys are better for classical ciphers
+                        securityScore += Math.min(10, classicalKeyVal.length);
+                    }
                 }
             }
-            
+
             // Add score for integrity check
             if (integrityCheck.checked) {
                 securityScore += 20;
             }
-            
+
             // Update UI based on score
             securityLevelFill.className = 'security-level-fill';
             securityLevelText.className = 'security-level-badge';
-            
+
             if (securityScore < 30) {
                 securityLevelFill.style.width = '25%';
                 securityLevelText.textContent = 'Low';
@@ -727,11 +831,12 @@
                 securityLevelText.textContent = 'High';
             }
         }
-        
+
         // Initialize the form state
         toggleEncryptionOptions();
+        toggleEncryptionFields();
         updateSecurityLevel();
-        
+
         // Helper function for toggling encryption options
         function toggleEncryptionOptions() {
             if (encryptionCheckbox.checked) {

@@ -12,38 +12,38 @@
             <div class="card-body">
                 <form method="POST" action="" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
-                    
+
                     <div class="row mb-4">
                         <div class="col-md-12">
                             <h5 class="border-bottom pb-2 mb-3 text-white">Stego Media</h5>
                             <div class="mb-3">
                                 {{ form.stego_file.label(class="form-label") }}
                                 {% if form.stego_file.errors %}
-                                    {{ form.stego_file(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.stego_file.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
+                                {{ form.stego_file(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.stego_file.errors %}
+                                    <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
                                 {% else %}
-                                    {{ form.stego_file(class="form-control") }}
+                                {{ form.stego_file(class="form-control") }}
                                 {% endif %}
                                 <div class="form-text">
                                     Select the media file that contains hidden data
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3" id="frameInfoGroup">
                                 {{ form.frame_info.label(class="form-label") }}
                                 {% if form.frame_info.errors %}
-                                    {{ form.frame_info(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.frame_info.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
+                                {{ form.frame_info(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.frame_info.errors %}
+                                    <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
                                 {% else %}
-                                    {{ form.frame_info(class="form-control") }}
+                                {{ form.frame_info(class="form-control") }}
                                 {% endif %}
                                 <div class="form-text">
                                     Required for video files only
@@ -55,37 +55,47 @@
                     <div class="row mb-4">
                         <div class="col-md-12 text-white">
                             <h5 class="border-bottom pb-2 mb-3">Decryption Options</h5>
-                            
+
                             <div class="mb-3 form-check">
                                 {{ form.is_encrypted(class="form-check-input") }}
                                 {{ form.is_encrypted.label(class="form-check-label") }}
                             </div>
-                            
+
                             <div class="mb-3 ms-4 decryption-options">
                                 {{ form.encryption_type.label(class="form-label") }}
                                 {{ form.encryption_type(class="form-select") }}
                             </div>
-                            
+
                             <!-- Modern decryption options -->
-                            <div class="mb-3 ms-4 decryption-options modern-decryption">
+                            <div class="mb-3 ms-4 decryption-options modern-decryption" id="password_container">
                                 {{ form.password.label(class="form-label") }}
                                 {% if form.password.errors %}
-                                    {{ form.password(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.password.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
+                                {{ form.password(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}
+                                    <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
                                 {% else %}
-                                    {{ form.password(class="form-control") }}
+                                {{ form.password(class="form-control") }}
                                 {% endif %}
                             </div>
-                            
-                            <!-- Hidden field to maintain compatibility -->
-                            <div class="d-none">
-                                {% if form.classical_key is defined %}
-                                    {{ form.classical_key(class="d-none") }}
+                            <div class="mb-3 ms-4 decryption-options" id="classical_key_container"
+                                style="display: none;">
+                                {{ form.classical_key.label(class="form-label") }}
+                                {% if form.classical_key.errors %}
+                                {{ form.classical_key(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.classical_key.errors %}
+                                    <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                {{ form.classical_key(class="form-control") }}
                                 {% endif %}
+                                <div class="form-text">
+                                    Enter the same key that was used for encryption
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -102,25 +112,83 @@
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const isEncryptedCheckbox = document.getElementById('is_encrypted');
         const encryptionTypeSelect = document.getElementById('encryption_type');
         const decryptionOptions = document.querySelectorAll('.decryption-options');
         const modernDecryption = document.querySelector('.modern-decryption');
-        
+        const classicalKeyContainer = document.getElementById('classical_key_container');
+        const passwordContainer = document.getElementById('password_container');
+
         // Toggle decryption options based on checkbox
         function toggleDecryptionOptions() {
             const display = isEncryptedCheckbox.checked ? 'block' : 'none';
             decryptionOptions.forEach(option => {
                 option.style.display = display;
             });
+
+            // If encryption is enabled, toggle the appropriate fields
+            if (isEncryptedCheckbox.checked) {
+                toggleEncryptionFields();
+            }
         }
-        
+
+        // Function to toggle fields based on encryption type
+        function toggleEncryptionFields() {
+            const selectedEncryption = encryptionTypeSelect.value;
+
+            // Remove existing warning if there is one
+            const existingWarning = document.getElementById('classical-cipher-warning');
+            if (existingWarning) {
+                existingWarning.remove();
+            }
+
+            // Hide both field types first
+            if (passwordContainer) {
+                passwordContainer.style.display = 'none';
+            }
+            if (classicalKeyContainer) {
+                classicalKeyContainer.style.display = 'none';
+            }
+
+            // Show appropriate fields based on selection
+            if (selectedEncryption === 'aes' || selectedEncryption === 'aes_rsa') {
+                if (passwordContainer) {
+                    passwordContainer.style.display = 'block';
+                }
+            } else if (['caesar', 'playfair', 'vigenere', 'hill'].includes(selectedEncryption)) {
+                if (classicalKeyContainer) {
+                    classicalKeyContainer.style.display = 'block';
+                }
+
+                // Show warning for classical ciphers
+                showClassicalCipherWarning();
+            }
+        }
+
+        function showClassicalCipherWarning() {
+            // Create alert if it doesn't exist
+            if (!document.getElementById('classical-cipher-warning')) {
+                const warningAlert = document.createElement('div');
+                warningAlert.id = 'classical-cipher-warning';
+                warningAlert.className = 'alert alert-warning alert-dismissible fade show';
+                warningAlert.innerHTML = `
+                <strong>Security Note:</strong> You are decrypting data encrypted with a classical cipher. 
+                These ciphers provide minimal security and are primarily for educational purposes.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+                // Insert after the decryption options
+                const decryptionSection = document.querySelector('.decryption-options').parentNode;
+                decryptionSection.appendChild(warningAlert);
+            }
+        }
+
         // Video file detection and frame info visibility
         const stegoFileInput = document.getElementById('stego_file');
         const frameInfoGroup = document.getElementById('frameInfoGroup');
-        
-        stegoFileInput.addEventListener('change', function() {
+
+        stegoFileInput.addEventListener('change', function () {
             const fileName = this.value.toLowerCase();
             if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mov')) {
                 frameInfoGroup.style.display = 'block';
@@ -128,13 +196,14 @@
                 frameInfoGroup.style.display = 'none';
             }
         });
-        
+
         // Set up event listeners
         isEncryptedCheckbox.addEventListener('change', toggleDecryptionOptions);
-        
+        encryptionTypeSelect.addEventListener('change', toggleEncryptionFields);
+
         // Initialize the form state
         toggleDecryptionOptions();
-        
+
         // Initially hide the frame info group
         frameInfoGroup.style.display = 'none';
     });

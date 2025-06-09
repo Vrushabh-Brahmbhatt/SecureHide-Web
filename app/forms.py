@@ -32,6 +32,7 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
+# In app/forms.py
 class HideDataForm(FlaskForm):
     media_file = FileField('Select Media File', 
                          validators=[FileRequired(), 
@@ -42,20 +43,28 @@ class HideDataForm(FlaskForm):
     encryption_type = SelectField('Encryption Type', 
                                  choices=[
                                      ('aes', 'AES (Password)'), 
-                                     ('aes_rsa', 'AES+RSA (Hybrid)')
+                                     ('aes_rsa', 'AES+RSA (Hybrid)'),
+                                     ('caesar', 'Caesar Cipher (Classical)'),
+                                     ('playfair', 'Playfair Cipher (Classical)'),
+                                     ('vigenere', 'Vigenère Cipher (Classical)'),
+                                     ('hill', 'Hill Cipher (Classical)')
                                  ],
                                  default='aes')
     
-    # Temporarily keep this field to avoid template errors, but make it optional
-    classical_key = StringField('Cipher Key (for classical ciphers)', validators=[Optional()])
+    # Modified to make it required for classical ciphers
+    classical_key = StringField('Cipher Key (for classical ciphers)')
     
     password = PasswordField('Password (for encryption)')
     integrity_check = BooleanField('Add Integrity Check', default=True)
     submit = SubmitField('Hide Data')
     
     def validate_password(self, password):
-        if self.encryption.data and not password.data:
-            raise ValidationError('Password is required when encryption is enabled.')
+        if self.encryption.data and self.encryption_type.data in ['aes', 'aes_rsa'] and not password.data:
+            raise ValidationError('Password is required for AES encryption.')
+            
+    def validate_classical_key(self, classical_key):
+        if self.encryption.data and self.encryption_type.data in ['caesar', 'playfair', 'vigenere', 'hill'] and not classical_key.data:
+            raise ValidationError('Cipher key is required for classical cipher encryption.')
 
 class ExtractDataForm(FlaskForm):
     stego_file = FileField('Select Stego File', 
@@ -68,14 +77,22 @@ class ExtractDataForm(FlaskForm):
     encryption_type = SelectField('Encryption Type', 
                                  choices=[
                                      ('aes', 'AES (Password)'), 
-                                     ('aes_rsa', 'AES+RSA (Hybrid)')
+                                     ('aes_rsa', 'AES+RSA (Hybrid)'),
+                                     ('caesar', 'Caesar Cipher (Classical)'),
+                                     ('playfair', 'Playfair Cipher (Classical)'),
+                                     ('vigenere', 'Vigenère Cipher (Classical)'),
+                                     ('hill', 'Hill Cipher (Classical)')
                                  ],
                                  default='aes')
-    # Keep this field for compatibility
-    classical_key = StringField('Cipher Key (for classical ciphers)', validators=[Optional()])
+    # Now used for classical ciphers
+    classical_key = StringField('Cipher Key (for classical ciphers)')
     password = PasswordField('Password (for decryption)')
     submit = SubmitField('Extract Data')
     
     def validate_password(self, password):
-        if self.is_encrypted.data and not password.data:
-            raise ValidationError('Password is required for decryption.')
+        if self.is_encrypted.data and self.encryption_type.data in ['aes', 'aes_rsa'] and not password.data:
+            raise ValidationError('Password is required for AES decryption.')
+            
+    def validate_classical_key(self, classical_key):
+        if self.is_encrypted.data and self.encryption_type.data in ['caesar', 'playfair', 'vigenere', 'hill'] and not classical_key.data:
+            raise ValidationError('Cipher key is required for classical cipher decryption.')
