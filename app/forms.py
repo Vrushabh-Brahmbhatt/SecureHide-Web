@@ -45,9 +45,7 @@ class HideDataForm(FlaskForm):
                                      ('aes', 'AES (Password)'), 
                                      ('aes_rsa', 'AES+RSA (Hybrid)'),
                                      ('caesar', 'Caesar Cipher (Classical)'),
-                                     ('playfair', 'Playfair Cipher (Classical)'),
-                                     ('vigenere', 'Vigenère Cipher (Classical)'),
-                                     ('hill', 'Hill Cipher (Classical)')
+                                     ('vigenere', 'Vigenère Cipher (Classical)')
                                  ],
                                  default='aes')
     
@@ -79,9 +77,7 @@ class ExtractDataForm(FlaskForm):
                                      ('aes', 'AES (Password)'), 
                                      ('aes_rsa', 'AES+RSA (Hybrid)'),
                                      ('caesar', 'Caesar Cipher (Classical)'),
-                                     ('playfair', 'Playfair Cipher (Classical)'),
-                                     ('vigenere', 'Vigenère Cipher (Classical)'),
-                                     ('hill', 'Hill Cipher (Classical)')
+                                     ('vigenere', 'Vigenère Cipher (Classical)')
                                  ],
                                  default='aes')
     # Now used for classical ciphers

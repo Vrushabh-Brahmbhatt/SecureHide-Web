@@ -174,8 +174,7 @@ def hybrid_decrypt_modified(encrypted_package, password=None):
     
     return plaintext
 
-# Steganography routes
-# Steganography routes
+#Steganography routes
 @steganography_bp.route('/hide', methods=['GET', 'POST'])
 @login_required
 def hide():
@@ -490,36 +489,39 @@ def extract():
                 pass
             
             # Decrypt if necessary
-            if is_encrypted and form.is_encrypted.data:
+            if is_encrypted and password:  # Use the password from URL parameters
                 try:
                     encrypted_package = json.loads(extracted_data)
                     encryption_method = encrypted_package.get('method', '')
-
+            
                     # Handle classical ciphers
                     if encryption_method in ['caesar', 'playfair', 'vigenere', 'hill']:
                         try:
                             cipher = classical_ciphers.get_cipher(encryption_method)
-                            classical_key = form.classical_key.data
-
+                            # For URL parameters, you'll need to get the classical key
+                            classical_key = request.args.get('classical_key')
+                            if not classical_key:
+                                flash('Classical cipher key is required for decryption.', 'danger')
+                                return redirect(url_for('steganography.extract'))
+            
                             # Get the encrypted data from the package
                             encrypted_text = encrypted_package.get('encrypted_data', '')
-
+            
                             # Decrypt the data
                             decrypted_data = cipher.decrypt(encrypted_text, classical_key)
                             extracted_data = decrypted_data
                         except Exception as e:
                             flash(f'Classical cipher decryption failed: {str(e)}', 'danger')
                             return redirect(url_for('steganography.extract'))
-
+            
                     # Handle AES/RSA encryption methods
                     elif encryption_method in ['password', 'key', 'rsa', 'aes', 'aes_rsa']:
                         # Use our modified decrypt function
-                        password = form.password.data
                         decrypted_data = hybrid_decrypt_modified(encrypted_package, password)
                         extracted_data = decrypted_data
                     else:
                         raise ValueError(f"Unknown encryption method: {encryption_method}")
-
+            
                 except Exception as e:
                     flash(f'Decryption failed: {str(e)}', 'danger')
                     return redirect(url_for('steganography.extract'))
@@ -630,14 +632,36 @@ def extract():
                 try:
                     encrypted_package = json.loads(extracted_data)
                     encryption_method = encrypted_package.get('method', '')
-                    
-                    # Use our modified decrypt function
-                    password = form.password.data
-                    decrypted_data = hybrid_decrypt_modified(encrypted_package, password)
-                    extracted_data = decrypted_data
+
+                    # Handle classical ciphers
+                    if encryption_method in ['caesar', 'playfair', 'vigenere', 'hill']:
+                        try:
+                            cipher = classical_ciphers.get_cipher(encryption_method)
+                            classical_key = form.classical_key.data
+
+                            # Get the encrypted data from the package
+                            encrypted_text = encrypted_package.get('encrypted_data', '')
+
+                            # Decrypt the data
+                            decrypted_data = cipher.decrypt(encrypted_text, classical_key)
+                            extracted_data = decrypted_data
+                        except Exception as e:
+                            flash(f'Classical cipher decryption failed: {str(e)}', 'danger')
+                            return redirect(url_for('steganography.extract'))
+
+                    # Handle AES/RSA encryption methods
+                    elif encryption_method in ['password', 'key', 'rsa', 'aes', 'aes_rsa']:
+                        # Use our modified decrypt function
+                        password = form.password.data
+                        decrypted_data = hybrid_decrypt_modified(encrypted_package, password)
+                        extracted_data = decrypted_data
+                    else:
+                        raise ValueError(f"Unknown encryption method: {encryption_method}")
+
                 except Exception as e:
                     flash(f'Decryption failed: {str(e)}', 'danger')
                     return redirect(url_for('steganography.extract'))
+
             
             # Check for integrity info
             has_integrity = False
